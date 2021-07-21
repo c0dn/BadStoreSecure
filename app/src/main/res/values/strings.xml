@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BadStore</string>
+    <string name="action_settings">Settings</string>
+    <string name="remember_card">Remember Card</string>
+    <string name="remember_me">Remember Me</string>
+
+</resources>
