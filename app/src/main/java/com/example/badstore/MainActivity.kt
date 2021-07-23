@@ -1,5 +1,6 @@
 package com.example.badstore
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -37,7 +38,6 @@ class MainActivity : AppCompatActivity() {
                         Log.v("[AUTH] Status code", response.code().toString())
                         if (response.code() == 200) {
                             val data = response.body()!!
-                            Log.v("[AUTH] Access token", data.access_token)
                             if (remember_me_box.isChecked) {
                                 db!!.setJWT(data.access_token)
                                 Log.v("[AUTH]", "Access token saved in DB")
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             Toast.makeText(applicationContext, "Login successful", Toast.LENGTH_LONG).show()
                             val intent= Intent(applicationContext, HomeActivity::class.java)
+                            intent.putExtra("JWT", data.access_token)
                             startActivity(intent)
                             finish()
                         }
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             Log.v("[AUTH]", "Using saved JWT token")
             Toast.makeText(applicationContext, "Using saved credentials", Toast.LENGTH_LONG).show()
             val intent= Intent(applicationContext, HomeActivity::class.java)
+            intent.putExtra("JWT", token)
             startActivity(intent)
             finish()
         }

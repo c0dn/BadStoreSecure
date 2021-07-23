@@ -12,8 +12,7 @@ class DatabaseHandler(context: Context) :
 
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_TABLE = "CREATE TABLE $TABLE_NAME " +
-                "($ID Integer PRIMARY KEY, $JWT TEXT, $CC_NUMBER TEXT, $CC_CCV Integer, $CC_MONTH Integer, " +
-                "$CC_YEAR Integer, $CC_NAME TEXT);"
+                "($ID Integer PRIMARY KEY, $JWT TEXT);"
         db?.execSQL(CREATE_TABLE)
     }
 
@@ -31,39 +30,6 @@ class DatabaseHandler(context: Context) :
         return (Integer.parseInt("$success") != -1)
     }
 
-    fun saveCreditCardInfo(card: Card): Boolean {
-        val db = this.writableDatabase
-        val values = ContentValues()
-        values.put(CC_NUMBER, card.cc_number)
-        values.put(CC_YEAR, card.cc_year)
-        values.put(CC_CCV, card.cc_cvv)
-        values.put(CC_NAME, card.cc_name)
-        values.put(CC_MONTH, card.cc_month)
-        val success = db.insert(TABLE_NAME, null, values)
-        db.close()
-        Log.v("setCC", "$success")
-        return (Integer.parseInt("$success") != -1)
-    }
-
-    fun retrieveCardInfo(): Card {
-        val card = Card()
-        val db = readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME"
-        val cursor = db.rawQuery(query, null)
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                card.cc_cvv = cursor.getInt(cursor.getColumnIndex(CC_CCV))
-                card.cc_month = cursor.getInt(cursor.getColumnIndex(CC_MONTH))
-                card.cc_name = cursor.getString(cursor.getColumnIndex(CC_NAME))
-                card.cc_year = cursor.getInt(cursor.getColumnIndex(CC_YEAR))
-                card.cc_number = cursor.getString(cursor.getColumnIndex(CC_NUMBER))
-            }
-        }
-        cursor.close()
-        db.close()
-        return card
-    }
-
     fun retrieveJWT(): String {
         var token: String = "";
         val db = readableDatabase
@@ -71,7 +37,9 @@ class DatabaseHandler(context: Context) :
         val cursor = db.rawQuery(query, null)
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                token = cursor.getString(cursor.getColumnIndex(JWT))
+                if (cursor.getString(cursor.getColumnIndex(JWT)) != null) {
+                    token = cursor.getString(cursor.getColumnIndex(JWT))
+                }
             }
         }
         cursor.close()
@@ -85,10 +53,5 @@ class DatabaseHandler(context: Context) :
         private val TABLE_NAME = "storage"
         private val ID = "id"
         private val JWT = "jwt"
-        private val CC_NUMBER = "cc_number"
-        private val CC_CCV = "cc_ccv"
-        private val CC_MONTH = "cc_month"
-        private val CC_YEAR = "cc_year"
-        private val CC_NAME = "cc_name"
     }
 }

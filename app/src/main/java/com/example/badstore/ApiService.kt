@@ -11,7 +11,7 @@ interface APIService {
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("cart/checkout")
-    fun checkout(@Body card: Card): Call<Checkout>
+    fun checkout(@Header("Authorization") token: String, @Body card: CartCheckout): Call<Checkout>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("auth/login")

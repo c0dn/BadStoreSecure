@@ -33,11 +33,12 @@ class HomeActivity : AppCompatActivity() {
         // assign a layout manager to the recycler view
         products_recyclerview.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-        getProducts()
+        val token = intent.getStringExtra("JWT")
+        getProducts(token)
 
     }
 
-    fun getProducts() {
+    fun getProducts(token: String) {
         apiService.getProducts().enqueue(object : retrofit2.Callback<List<Product>> {
             override fun onFailure(call: Call<List<Product>>, t: Throwable) {
 
@@ -52,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
                 products = response.body()!!
 
-                productAdapter = ProductAdapter(this@HomeActivity, products)
+                productAdapter = ProductAdapter(this@HomeActivity, products, token)
 
                 products_recyclerview.adapter = productAdapter
                 productAdapter.notifyDataSetChanged()
