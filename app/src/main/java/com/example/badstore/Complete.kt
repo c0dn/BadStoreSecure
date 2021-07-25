@@ -25,8 +25,9 @@ class Complete : AppCompatActivity() {
         cartCheckout.cc_month = intent.getStringExtra("cc_month").toInt()
         cartCheckout.cc_name = intent.getStringExtra("cc_name")
         cartCheckout.cc_cvv = intent.getStringExtra("cc_cvv").toInt()
+        val token = intent.getStringExtra("JWT")
         apiService = APIConfig.getRetrofitClient(this).create(APIService::class.java)
-        apiService.checkout(intent.getStringExtra("JWT"), cartCheckout).enqueue(object: retrofit2.Callback<Checkout> {
+        apiService.checkout("Bearer $token", cartCheckout).enqueue(object: retrofit2.Callback<Checkout> {
             override fun onFailure(call: Call<Checkout>, t: Throwable) {
                 Log.d("Server Error", t.message)
                 Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()

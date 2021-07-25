@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
+import com.example.badstore.db.DatabaseHandler
 
 class UserCardProvider : ContentProvider() {
 
@@ -21,27 +22,9 @@ class UserCardProvider : ContentProvider() {
         val CONTENT_URI: Uri = Uri.parse(URL)
         const val uriCode = 1
         var uriMatcher: UriMatcher? = null
-        private val values: HashMap<String, String>? = null
-
-        // declaring name of the database
-        const val DATABASE_NAME = "cards_db"
 
         // declaring table name of the database
         const val TABLE_NAME = "cards"
-
-        // declaring version of the database
-        const val DATABASE_VERSION = 2
-
-        private const val CC_NUMBER = "cc_number"
-        private const val CC_CCV = "cc_ccv"
-        private const val CC_MONTH = "cc_month"
-        private const val CC_YEAR = "cc_year"
-        private const val CC_NAME = "cc_name"
-
-        // sql query to create the table
-        const val CREATE_DB_TABLE = "CREATE TABLE $TABLE_NAME " +
-                "(id Integer PRIMARY KEY, $CC_NUMBER TEXT, $CC_CCV Integer, $CC_MONTH Integer, " +
-                "$CC_YEAR Integer, $CC_NAME TEXT);"
 
         init {
 
@@ -75,8 +58,8 @@ class UserCardProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         val context = context
-        val dbHelper = DatabaseHelper(context)
-        db = dbHelper.writableDatabase
+        val dbHelper = context?.let { DatabaseHandler(it) }
+        db = dbHelper?.writableDatabase
         return db != null
     }
 
@@ -140,32 +123,5 @@ class UserCardProvider : ContentProvider() {
     // creating object of database
     // to perform query
     private var db: SQLiteDatabase? = null
-
-    // creating a database
-    private class DatabaseHelper  // defining a constructor
-        (context: Context?) : SQLiteOpenHelper(
-        context,
-        DATABASE_NAME,
-        null,
-        DATABASE_VERSION
-    ) {
-        // creating a table in the database
-        override fun onCreate(db: SQLiteDatabase) {
-            db.execSQL(CREATE_DB_TABLE)
-        }
-
-        override fun onUpgrade(
-            db: SQLiteDatabase,
-            oldVersion: Int,
-            newVersion: Int
-        ) {
-
-            // sql query to drop a table
-            // having similar name
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
-            onCreate(db)
-        }
-    }
-
 
 }
